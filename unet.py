@@ -8,9 +8,9 @@ import torch.nn.functional as F
 class UNet(nn.Module):
     def __init__(
         self,
-        in_channels=1,
-        n_classes=2,
-        depth=5,
+        in_channels=3,
+        n_classes=19,
+        depth=6,
         wf=6,
         padding=False,
         batch_norm=False,
