@@ -42,7 +42,7 @@ class data_loader(data.Dataset):
 
     def __init__(
             self,
-            root="/home/sombit/kitti",
+            root="/media/disk2/sombit/kitti_seg",
             split="train",
             is_transform=True,
             img_size=(375, 1242),
