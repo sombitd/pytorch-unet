@@ -58,7 +58,7 @@ for i in range(epochs):
         #     img.save('test.png')
         #     # break
         # print('[%d, %5d] loss: %.3f' %(i + 1, counter + 1, loss))
-        print("loss",loss," epochs",epochs)
+        print("loss",loss.item()," epochs",epochs)
         optim.zero_grad()
         loss.backward()
         optim.step()
