@@ -44,7 +44,7 @@ for i in range(epochs):
             raise Exception("Only support upsampling")
 
         loss = F.cross_entropy(
-            input, target, weight=weight, size_average=size_average, ignore_index=250
+            X, y, size_average=True, ignore_index=250
         )
         print(y.shape)
         # if (i==0):
