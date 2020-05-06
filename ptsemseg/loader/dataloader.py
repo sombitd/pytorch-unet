@@ -83,15 +83,15 @@ class data_loader(data.Dataset):
         self.all_files.sort()
 
         # split 40 images from the training set as the val set
-        # if self.split == "val":
-        #     self.files[split] = self.all_files[::5]  # select one img from every 5 imgs into the val set
-        # # 160 training images
+        if self.split == "val":
+            self.files[split] = self.all_files[::5]  # select one img from every 5 imgs into the val set
+        # 160 training images
         if self.split == "train":
-            # self.files[split] = [file_name for file_name in self.all_files if file_name not in self.all_files[::5]]
-            self.files[split] = self.all_files
+            self.files[split] = [file_name for file_name in self.all_files if file_name not in self.all_files[::5]]
+            # self.files[split] = self.all_files
         
-        # if self.split == "test":
-        #     self.files[split] = self.all_files
+        if self.split == "test":
+            self.files[split] = self.all_files
 
 
         self.void_classes = [0, 1, 2, 3, 4, 5, 6, 9, 10, 14, 15, 16, 18, 29, 30, -1]
