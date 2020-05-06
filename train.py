@@ -46,7 +46,7 @@ for i in range(epochs):
         loss = F.cross_entropy(
             X, y, size_average=True, ignore_index=250
         )
-        print(y.shape)
+        # print(y.shape)
         # if (i==0):
         #     t = y.numpy()
         #     print(image_path)
@@ -57,7 +57,8 @@ for i in range(epochs):
 
         #     img.save('test.png')
         #     # break
-        print('[%d, %5d] loss: %.3f' %(i + 1, counter + 1, loss))
+        # print('[%d, %5d] loss: %.3f' %(i + 1, counter + 1, loss))
+        print("loss",loss," epochs",epochs)
         optim.zero_grad()
         loss.backward()
         optim.step()
