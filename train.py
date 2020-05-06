@@ -7,6 +7,7 @@ from PIL import Image
 import numpy as np
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = UNet(n_classes=2, padding=True, up_mode='upsample').to(device)
+
 optim = torch.optim.Adam(model.parameters())
 # data_loader = get_loader('kitti','seg')
 # data_path = "/home/sombit/kitti"
@@ -24,9 +25,10 @@ trainloader = data.DataLoader(t_loader,
 epochs = 10
 
 for i in range(epochs):
+    counter =0
     for (X, y,image_path) in trainloader:
-        # X = X.to(device)  # [N, 1, H, W]
-        # y = y.to(device)  # [N, H, W] with class indices (0, 1)
+        X = X.to(device)  # [N, 1, H, W]
+        y = y.to(device)  # [N, H, W] with class indices (0, 1)
         # prediction = model(X)  
         n, c, h, w = X.size()
         nt, ht, wt = y.size()
@@ -44,19 +46,22 @@ for i in range(epochs):
         loss = F.cross_entropy(
             input, target, weight=weight, size_average=size_average, ignore_index=250
         )
-    print(y.shape)
-        if (i==0):
-            t = y.numpy()
-            print(image_path)
-            # print(t.type)
-            img = np.asarray(y,dtype=np.uint8)
-            # print(t[1,:,:])
-            img = Image.fromarray(np.uint8(img[1,:,:]))
+        print(y.shape)
+        # if (i==0):
+        #     t = y.numpy()
+        #     print(image_path)
+        #     # print(t.type)
+        #     img = np.asarray(y,dtype=np.uint8)
+        #     # print(t[1,:,:])
+        #     img = Image.fromarray(np.uint8(img[1,:,:]))
 
-            img.save('test.png')
-            break
-        print("Loss =" , )
+        #     img.save('test.png')
+        #     # break
+        print('[%d, %5d] loss: %.3f' %(i + 1, counter + 1, loss))
+        optim.zero_grad()
+        loss.backward()
+        optim.step()
 
-        # optim.zero_grad()
-        # loss.backward()
-        # optim.step()
+ck_path = "/media/disk2/sombit/kitti_seg/ck.pth"   
+
+torch.save(model.state_dict(),ck_path )
