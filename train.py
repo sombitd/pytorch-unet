@@ -36,16 +36,16 @@ for i in range(epochs):
 
         # Handle inconsistent size between input and target
         if h > ht and w > wt:  # upsample labels
-            prediction = prediction.unsequeeze(1)
-            prediction = F.upsample(prediction, size=(h, w), mode="nearest")
-            prediction = prediction.sequeeze(1)
+            y = y.unsequeeze(1)
+            y = F.upsample(y, size=(h, w), mode="nearest")
+            y = prediction.sequeeze(1)
         elif h < ht and w < wt:  # upsample images
-            input = F.upsample(input, size=(ht, wt), mode="bilinear")
+            prediction = F.upsample(prediction, size=(ht, wt), mode="bilinear")
         elif h != ht and w != wt:
             raise Exception("Only support upsampling")
 
         loss = F.cross_entropy(
-            pred, y, ignore_index=250
+            prediction, y, ignore_index=250
         )
         #print(y.shape)
         #if (i==0):
