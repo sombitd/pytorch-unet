@@ -7,7 +7,7 @@ from PIL import Image
 import numpy as np
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print (device)
-model = UNet(n_classes=2, padding=True, up_mode='upsample').to(device)
+model = UNet(n_classes=19, padding=True, up_mode='upsample').to(device)
 
 optim = torch.optim.Adam(model.parameters())
 # data_loader = get_loader('kitti','seg')

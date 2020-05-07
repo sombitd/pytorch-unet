@@ -7,7 +7,7 @@ from PIL import Image
 import numpy as np
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print (device)
-model = UNet(n_classes=2, padding=True, up_mode='upsample').to(device)
+model = UNet(n_classes=19, padding=True, up_mode='upsample').to(device)
 
 optim = torch.optim.Adam(model.parameters())
 # data_loader = get_loader('kitti','seg')
@@ -19,7 +19,7 @@ t_loader = data_loader(
         # version = cfg['data']['version'],
 )
 trainloader = data.DataLoader(t_loader,
-                                  batch_size=1, 
+                                  batch_size=4, 
                                   num_workers=2, 
                                   shuffle=False)
 
@@ -57,9 +57,16 @@ for (X, y,image_path) in trainloader:
         #img = np.asarray(y,dtype=np.uint8)
         ## print(t[1,:,:])
         #img = Image.fromarray(np.uint8(img[1,:,:]))
-    filename = {0}.format(counter)
-    img.save(filepath + filename)
-    counter = counter+1
+    for j in (4):
+        t = prediction.numpy()
+        #print(image_path)
+        ## print(t.type)
+        img = np.asarray(y,dtype=np.uint8)
+        ## print(t[1,:,:])
+        img = Image.fromarray(np.uint8(img[j,:,:]))
+        filename = {0}.format(counter)
+        img.save(filepath + filename)
+        counter = counter+1
     
     # print('[%d, %5d] loss: %.3f' %(i + 1, counter + 1, loss))
     # print("loss",loss.item()," epochs",epochs)
