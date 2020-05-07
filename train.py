@@ -56,13 +56,14 @@ for i in range(epochs):
             ## print(t[1,:,:])
             #img = Image.fromarray(np.uint8(img[1,:,:]))
 
-            img.save('test.png')
-            break
+            # img.save('test.png')
+            # break
         # print('[%d, %5d] loss: %.3f' %(i + 1, counter + 1, loss))
-        # print("loss",loss.item()," epochs",epochs)
+     
         optim.zero_grad()
         loss.backward()
         optim.step()
+        print("loss",loss.item()," epochs",epochs)
         # if(i==0):
         #     print(image_path)
         #     t = y.numpy()
