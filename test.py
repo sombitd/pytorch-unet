@@ -28,12 +28,32 @@ filepath = "/media/disk2/sombit/kitti_test/"
 counter =0
 state_dict = torch.load( "/media/disk2/sombit/kitti_seg/ck.pth")
 model.load_state_dict(state_dict)
-
-for (X, y,image_path) in trainloader:
-    X = X.to(device)  # [N, 1, H, W]
-    # y = y.to(device)  # [N, H, W] with class indices (0, 1)
-    prediction = model(X)  
-    # n, c, h, w = prediction.size()
+model.to(device)
+model.eval()
+with torch.no_grad():
+        for (X, y,image_path) in trainloader:
+            X= X.to(device)
+            outputs = model(X)
+            pred = outputs.data.max(1)[1].cpu().numpy()
+            print (pred)
+            print(pred.shape)
+            # gt = labels.numpy()
+            # t = prediction.numpy()
+            #print(image_path)
+            ## print(t.type)
+            # img = np.asarray(y,dtype=np.uint8)
+            ## print(t[1,:,:])
+            # for j in (4):
+            #     img = Image.fromarray(np.uint8(pred[j,:,:]))
+            #     filename = {0}.format(counter)
+            #     img.save(filepath + filename)
+            #     counter = counter+1
+            # running_metrics.update(gt, pred)
+# for (X, y,image_path) in trainloader:
+#     X = X.to(device)  # [N, 1, H, W]
+#     # y = y.to(device)  # [N, H, W] with class indices (0, 1)
+#     prediction = model(X)  
+#     # n, c, h, w = prediction.size()
     # nt, ht, wt = y.size()
 
     # Handle inconsistent size between input and target
@@ -57,16 +77,16 @@ for (X, y,image_path) in trainloader:
         #img = np.asarray(y,dtype=np.uint8)
         ## print(t[1,:,:])
         #img = Image.fromarray(np.uint8(img[1,:,:]))
-    for j in (4):
-        t = prediction.numpy()
-        #print(image_path)
-        ## print(t.type)
-        img = np.asarray(y,dtype=np.uint8)
-        ## print(t[1,:,:])
-        img = Image.fromarray(np.uint8(img[j,:,:]))
-        filename = {0}.format(counter)
-        img.save(filepath + filename)
-        counter = counter+1
+    # for j in (4):
+    #     t = prediction.numpy()
+    #     #print(image_path)
+    #     ## print(t.type)
+    #     img = np.asarray(y,dtype=np.uint8)
+    #     ## print(t[1,:,:])
+    #     img = Image.fromarray(np.uint8(img[j,:,:]))
+    #     filename = {0}.format(counter)
+    #     img.save(filepath + filename)
+    #     counter = counter+1
     
     # print('[%d, %5d] loss: %.3f' %(i + 1, counter + 1, loss))
     # print("loss",loss.item()," epochs",epochs)
