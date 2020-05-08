@@ -87,8 +87,8 @@ class data_loader(data.Dataset):
             self.files[split] = self.all_files[::5]  # select one img from every 5 imgs into the val set
         # 160 training images
         if self.split == "train":
-            self.files[split] = [file_name for file_name in self.all_files if file_name not in self.all_files[::5]]
-            # self.files[split] = self.all_files
+            # self.files[split] = [file_name for file_name in self.all_files if file_name not in self.all_files[::5]]
+            self.files[split] = self.all_files
         
         if self.split == "test":
             self.files[split] = self.all_files

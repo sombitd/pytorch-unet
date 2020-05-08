@@ -19,14 +19,15 @@ t_loader = data_loader(
         # version = cfg['data']['version'],
 )
 trainloader = data.DataLoader(t_loader,
-                                  batch_size=4, 
+                                  batch_size=2, 
                                   num_workers=2, 
                                   shuffle=True)
 
-epochs = 1
+epochs = 50
 
 for i in range(epochs):
     counter =0
+    running_loss = 0.0
     for (X, y,image_path) in trainloader:
         X = X.to(device)  # [N, 1, H, W]
         y = y.to(device)  # [N, H, W] with class indices (0, 1)
@@ -63,7 +64,11 @@ for i in range(epochs):
         optim.zero_grad()
         loss.backward()
         optim.step()
-        print("loss",loss.item()," epochs",epochs)
+        running_loss +=loss.item()
+        if counter%10==9:
+            print("loss",running_loss/10," epochs",i+1)
+            running_loss =0.0
+        counter +=1
         # if(i==0):
         #     print(image_path)
         #     t = y.numpy()
@@ -72,6 +77,6 @@ for i in range(epochs):
 
 
 
-ck_path = "/media/disk2/sombit/kitti_seg/ck.pth"   
+ck_path = "/media/disk2/sombit/kitti_seg/ck2.pth"   
 
 torch.save(model.state_dict(),ck_path )

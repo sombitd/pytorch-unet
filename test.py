@@ -5,6 +5,7 @@ from ptsemseg.loader.dataloader import data_loader
 from torch.utils import data
 from PIL import Image
 import numpy as np
+import scipy.misc as m
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print (device)
 model = UNet(n_classes=19, padding=True, up_mode='upsample').to(device)
@@ -30,24 +31,64 @@ state_dict = torch.load( "/media/disk2/sombit/kitti_seg/ck.pth")
 model.load_state_dict(state_dict)
 model.to(device)
 model.eval()
+
+colors = [  # [  0,   0,   0],
+    [128, 64, 128],
+    [244, 35, 232],
+    [70, 70, 70],
+    [102, 102, 156],
+    [190, 153, 153],
+    [153, 153, 153],
+    [250, 170, 30],
+    [220, 220, 0],
+    [107, 142, 35],
+    [152, 251, 152],
+    [0, 130, 180],
+    [220, 20, 60],
+    [255, 0, 0],
+    [0, 0, 142],
+    [0, 0, 70],
+    [0, 60, 100],
+    [0, 80, 100],
+    [0, 0, 230],
+    [119, 11, 32],
+]
+
+label_colours = dict(zip(range(19), colors))
+
+def decode_segmap_tocolor(temp, n_classes=19):
+    r = temp.copy()
+    g = temp.copy()
+    b = temp.copy()
+    for l in range(0, n_classes):
+        r[temp == l] = label_colours[l][0]
+        g[temp == l] = label_colours[l][1]
+        b[temp == l] = label_colours[l][2]
+
+    rgb = np.zeros((temp.shape[0], temp.shape[1], 3))
+    rgb[:, :, 0] = r / 255.0
+    rgb[:, :, 1] = g / 255.0
+    rgb[:, :, 2] = b / 255.0
+    return rgb
 with torch.no_grad():
         for (X, y,image_path) in trainloader:
             X= X.to(device)
             outputs = model(X)
             pred = outputs.data.max(1)[1].cpu().numpy()
-            print (pred)
-            print(pred.shape)
+            
+            # print(pred.shape)
             # gt = labels.numpy()
             # t = prediction.numpy()
             #print(image_path)
             ## print(t.type)
             # img = np.asarray(y,dtype=np.uint8)
             ## print(t[1,:,:])
-            # for j in (4):
-            #     img = Image.fromarray(np.uint8(pred[j,:,:]))
-            #     filename = {0}.format(counter)
-            #     img.save(filepath + filename)
-            #     counter = counter+1
+            for j in (4):
+                # img = Image.fromarray(np.uint8(pred[j,:,:]))
+                decoded = decode_segmap_tocolor(pred[j,:,:], n_classes=19)
+                filename = "{}.png".format(counter)
+                m.imsave(filepath + filename, decoded)
+                counter = counter+1
             # running_metrics.update(gt, pred)
 # for (X, y,image_path) in trainloader:
 #     X = X.to(device)  # [N, 1, H, W]
