@@ -27,7 +27,7 @@ trainloader = data.DataLoader(t_loader,
 epochs = 1
 filepath = "/media/disk2/sombit/kitti_test/"
 counter =0
-state_dict = torch.load( "/media/disk2/sombit/kitti_seg/ck.pth")
+state_dict = torch.load( "/media/disk2/sombit/kitti_seg/ck1.pth")
 model.load_state_dict(state_dict)
 model.to(device)
 model.eval()
@@ -89,6 +89,7 @@ with torch.no_grad():
                 filename = "{}.png".format(counter)
                 m.imsave(filepath + filename, decoded)
                 counter = counter+1
+          	#print("counter",counter)
             # running_metrics.update(gt, pred)
 # for (X, y,image_path) in trainloader:
 #     X = X.to(device)  # [N, 1, H, W]
