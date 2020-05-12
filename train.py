@@ -5,10 +5,18 @@ from ptsemseg.loader.dataloader import data_loader
 from torch.utils import data
 from PIL import Image
 import numpy as np
+def save_ckp(state, best_model_dir):
+    f_path = "/media/disk2/sombit/kitti_seg/checkpoint.pt"
+    torch.save(state, f_path)
+def load_ckp(checkpoint_fpath, model, optimizer):
+    checkpoint = torch.load(checkpoint_fpath)
+    model.load_state_dict(checkpoint['state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer'])
+    return model, optimizer, checkpoint['epoch']
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print (device)
-model = UNet(n_classes=19, padding=True, up_mode='upsample').to(device)
-
+model = UNet( padding=True, up_mode='upsample').to(device)
+print("Load Model")
 optim = torch.optim.Adam(model.parameters())
 # data_loader = get_loader('kitti','seg')
 # data_path = "/home/sombit/kitti"
@@ -18,12 +26,20 @@ t_loader = data_loader(
         img_norm=False,
         # version = cfg['data']['version'],
 )
+
 trainloader = data.DataLoader(t_loader,
                                   batch_size=2, 
                                   num_workers=2, 
                                   shuffle=True)
 
 epochs = 50
+resume = False
+if(resume):
+    model, optimizer, start_epoch = load_ckp("/media/disk2/sombit/kitti_seg/checkpoint.pt", model, optim)
+    i = start_epoch
+print("Started Training")
+# import shutil
+
 
 for i in range(epochs):
     counter =0
@@ -66,7 +82,7 @@ for i in range(epochs):
         optim.step()
         running_loss +=loss.item()
         if counter%10==9:
-            print("loss",running_loss/10," epochs",i+1)
+            print("loss",running_loss/10," epochs",i+1,"counter",counter)
             running_loss =0.0
         counter +=1
         # if(i==0):
@@ -79,4 +95,9 @@ for i in range(epochs):
 
 ck_path = "/media/disk2/sombit/kitti_seg/ck2.pth"   
 
-torch.save(model.state_dict(),ck_path )
+state_curr = {
+    'epoch': epoch+1,
+    'state_dict': model.state_dict(),
+    'optimizer': optim.state_dict()
+}
+save_ckp(state_curr)
