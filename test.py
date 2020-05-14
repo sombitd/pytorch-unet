@@ -32,7 +32,7 @@ state_dict = torch.load( "/media/disk2/sombit/kitti_seg/checkpoint.pt")
 model.load_state_dict(state_dict)
 model.to(device)
 model.eval()
-   colors = [  # [  0,   0,   0],
+colors = [  # [  0,   0,   0],
         [128, 64, 128],
         # [244, 35, 232],
         [70, 70, 70],
