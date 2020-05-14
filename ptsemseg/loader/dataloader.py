@@ -74,7 +74,7 @@ class data_loader(data.Dataset):
 
 
        self.void_classes = [0, 1, 2, 3, 4, 5, 6, 9, 10, 14, 15, 16, 18, 29, 30, -1,7,11,17,19,20,21,31]
-        self.valid_classes = [
+       self.valid_classes = [
             7,
             # 8,
             11,
