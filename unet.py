@@ -9,7 +9,7 @@ class UNet(nn.Module):
     def __init__(
         self,
         in_channels=3,
-        n_classes=19,
+        n_classes=13,
         depth=5,
         wf=6,
         padding=False,

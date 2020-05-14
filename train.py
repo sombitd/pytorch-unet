@@ -5,14 +5,14 @@ from ptsemseg.loader.dataloader import data_loader
 from torch.utils import data
 from PIL import Image
 import numpy as np
-def save_ckp(state, best_model_dir):
+def save_ckp(state):
     f_path = "/media/disk2/sombit/kitti_seg/checkpoint.pt"
     torch.save(state, f_path)
 def load_ckp(checkpoint_fpath, model, optimizer):
     checkpoint = torch.load(checkpoint_fpath)
     model.load_state_dict(checkpoint['state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer'])
-    return model, optimizer, checkpoint['epoch']
+    optim.load_state_dict(checkpoint['optimizer'])
+    return model, optim, checkpoint['epoch']
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print (device)
 model = UNet( padding=True, up_mode='upsample').to(device)
@@ -32,10 +32,10 @@ trainloader = data.DataLoader(t_loader,
                                   num_workers=2, 
                                   shuffle=True)
 
-epochs = 50
+epochs = 70
 resume = False
 if(resume):
-    model, optimizer, start_epoch = load_ckp("/media/disk2/sombit/kitti_seg/checkpoint.pt", model, optim)
+    model, optim, start_epoch = load_ckp("/media/disk2/sombit/kitti_seg/checkpoint.pt", model, optim)
     i = start_epoch
 print("Started Training")
 # import shutil
@@ -47,6 +47,7 @@ for i in range(epochs):
     for (X, y,image_path) in trainloader:
         X = X.to(device)  # [N, 1, H, W]
         y = y.to(device)  # [N, H, W] with class indices (0, 1)
+        model.train()
         prediction = model(X)  
         n, c, h, w = prediction.size()
         nt, ht, wt = y.size()
@@ -96,7 +97,7 @@ for i in range(epochs):
 ck_path = "/media/disk2/sombit/kitti_seg/ck2.pth"   
 
 state_curr = {
-    'epoch': epoch+1,
+    'epoch': i+1,
     'state_dict': model.state_dict(),
     'optimizer': optim.state_dict()
 }
