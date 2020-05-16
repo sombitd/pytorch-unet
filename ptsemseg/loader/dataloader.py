@@ -7,19 +7,19 @@ import scipy.misc as m
 
 from torch.utils import data
 
-from ptsemseg.augmentations import *
+# from ptsemseg.augmentations import *
 
 class data_loader(data.Dataset):
     # 19classes, RGB of maskes
     colors = [  # [  0,   0,   0],
         [128, 64, 128],
-        # [244, 35, 232],
+        [244, 35, 232],
         [70, 70, 70],
         [102, 102, 156],
-        # [190, 153, 153],
-        # [153, 153, 153],
-        # [250, 170, 30],
-        # [220, 220, 0],
+        [190, 153, 153],
+        [153, 153, 153],
+        [250, 170, 30],
+        [220, 220, 0],
         [107, 142, 35],
         [152, 251, 152],
         [0, 130, 180],
@@ -28,12 +28,12 @@ class data_loader(data.Dataset):
         [0, 0, 142],
         [0, 0, 70],
         [0, 60, 100],
-        # [0, 80, 100],
+        [0, 80, 100],
         [0, 0, 230],
         [119, 11, 32],
     ]
 
-    label_colours = dict(zip(range(13), colors))
+    label_colours = dict(zip(range(19), colors))
 
     # mean_rgb = {
     #     "pascal": [103.939, 116.779, 123.68],
@@ -42,8 +42,8 @@ class data_loader(data.Dataset):
 
     def __init__(
             self,
-            root="/media/disk2/sombit/kitti_seg",
-            # root="/home/sombit/kitti",
+            # root="/media/disk2/sombit/kitti_seg",
+            root="/home/sombit/kitti",
             split="train",
             is_transform=True,
             img_size=(375, 1242),
@@ -64,7 +64,7 @@ class data_loader(data.Dataset):
         self.is_transform = is_transform
         self.augmentations = augmentations
         self.img_norm = img_norm
-        self.n_classes = 13
+        self.n_classes = 19
         self.img_size = (
             img_size if isinstance(img_size, tuple) else (img_size, img_size)
         )
@@ -94,16 +94,16 @@ class data_loader(data.Dataset):
             self.files[split] = self.all_files
 
 
-        self.void_classes = [0, 1, 2, 3, 4, 5, 6, 9, 10, 14, 15, 16, 18, 29, 30, -1,7,11,17,19,20,21,31]
+        self.void_classes = [0, 1, 2, 3, 4, 5, 6, 9, 10, 14, 15, 16, 18, 29, 30,-1]
         self.valid_classes = [
             7,
-            # 8,
+            8,
             11,
             12,
-            # 13,
-            # 17,
-            # 19,
-            # 20,
+            13,
+            17,
+            19,
+            20,
             21,
             22,
             23,
@@ -112,20 +112,20 @@ class data_loader(data.Dataset):
             26,
             27,
             28,
-            # 31,
+            31,
             32,
             33,
         ]
         self.class_names = [
             "unlabelled",
             "road",
-            # "sidewalk",
+            "sidewalk",
             "building",
             "wall",
-            # "fence",
-            # "pole",
-            # "traffic_light",
-            # "traffic_sign",
+            "fence",
+            "pole",
+            "traffic_light",
+            "traffic_sign",
             "vegetation",
             "terrain",
             "sky",
@@ -134,14 +134,14 @@ class data_loader(data.Dataset):
             "car",
             "truck",
             "bus",
-            # "train",
+            "train",
             "motorcycle",
             "bicycle",
         ]
 
         self.ignore_index = 250
-        self.class_map = dict(zip(self.valid_classes, range(13)))
-        self.decode_class_map = dict(zip(range(13), self.valid_classes))
+        self.class_map = dict(zip(self.valid_classes, range(19)))
+        self.decode_class_map = dict(zip(range(19), self.valid_classes))
 
         if not self.files[split]:
             raise Exception(
@@ -169,8 +169,8 @@ class data_loader(data.Dataset):
         lbl = m.imread(lbl_path)  # original label size: 375*1242
         lbl = self.encode_segmap(np.array(lbl, dtype=np.uint8))
 
-        if self.augmentations is not None:
-            img, lbl = self.augmentations(img, lbl)
+        # if self.augmentations is not None:
+        #     img, lbl = self.augmentations(img, lbl)
 
         if self.is_transform:
             img, lbl = self.transform(img, lbl)
@@ -214,7 +214,7 @@ class data_loader(data.Dataset):
 
         return img, lbl
 
-    def decode_segmap_tocolor(self, temp):
+    def decode_segmap_tocolor(self):
         r = temp.copy()
         g = temp.copy()
         b = temp.copy()

@@ -24,15 +24,15 @@ t_loader = data_loader(
         
         is_transform=True,
         img_norm=False,
-        # version = cfg['data']['version'],
+
 )
 
 trainloader = data.DataLoader(t_loader,
-                                  batch_size=2, 
+                                  batch_size=1, 
                                   num_workers=2, 
                                   shuffle=True)
 
-epochs = 70
+epochs = 100
 resume = False
 if(resume):
     model, optim, start_epoch = load_ckp("/media/disk2/sombit/kitti_seg/checkpoint.pt", model, optim)
@@ -45,9 +45,11 @@ for i in range(epochs):
     counter =0
     running_loss = 0.0
     for (X, y,image_path) in trainloader:
+
         X = X.to(device)  # [N, 1, H, W]
         y = y.to(device)  # [N, H, W] with class indices (0, 1)
         model.train()
+        optim.zero_grad()
         prediction = model(X)  
         n, c, h, w = prediction.size()
         nt, ht, wt = y.size()
@@ -65,20 +67,20 @@ for i in range(epochs):
         loss = F.cross_entropy(
             prediction, y, ignore_index=250
         )
-        #print(y.shape)
-        #if (i==0):
-            #t = y.numpy()
-            #print(image_path)
-            ## print(t.type)
-            #img = np.asarray(y,dtype=np.uint8)
-            ## print(t[1,:,:])
-            #img = Image.fromarray(np.uint8(img[1,:,:]))
+        
+        # if (i==0):
+        #     t = y.numpy()
+        #     print(image_path)
+        #     # print(t.type)
+        #     img = np.asarray(y,dtype=np.uint8)
+        #     # print(t[1,:,:])
+        #     img = Image.fromarray(np.uint8(img[0,:,:]))
 
-            # img.save('test.png')
-            # break
-        # print('[%d, %5d] loss: %.3f' %(i + 1, counter + 1, loss))
+        #     img.save('test.png')
+        #     break
+        # # print('[%d, %5d] loss: %.3f' %(i + 1, counter + 1, loss))
      
-        optim.zero_grad()
+        
         loss.backward()
         optim.step()
         running_loss +=loss.item()
@@ -94,10 +96,9 @@ for i in range(epochs):
 
 
 
-ck_path = "/media/disk2/sombit/kitti_seg/ck2.pth"   
+  
 
 state_curr = {
-    'epoch': i+1,
     'state_dict': model.state_dict(),
     'optimizer': optim.state_dict()
 }
